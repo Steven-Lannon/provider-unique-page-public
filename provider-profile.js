@@ -112,6 +112,13 @@
     line-height:1.2;
     letter-spacing:-0.01em;
   }
+.pp-widget .badge-row{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:8px;
+    margin-bottom:8px;
+  }
 .pp-widget .location-badge{
     display:inline-flex;
     align-items:center;
@@ -122,18 +129,27 @@
     background:var(--accent-soft);
     padding:4px 12px;
     border-radius:100px;
-    margin-bottom:8px;
   }
 .pp-widget .location-badge svg{
     width:13px;
     height:13px;
     flex-shrink:0;
   }
-.pp-widget .suite-note{
-    font-size:13.5px;
-    color:var(--muted) !important;
-    font-weight:400 !important;
-    margin:2px 0 0 0;
+.pp-widget .suite-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    font-size:13px;
+    font-weight:600 !important;
+    color:var(--accent) !important;
+    background:var(--accent-soft);
+    padding:4px 12px;
+    border-radius:100px;
+  }
+.pp-widget .suite-badge svg{
+    width:13px;
+    height:13px;
+    flex-shrink:0;
   }
 .pp-widget .status-banner{
     display:flex;
@@ -507,7 +523,7 @@
       : "";
 
     const suiteHtml = suiteVal
-      ? `<p class="suite-note">Suite ${escapeHtml(suiteVal)}</p>`
+      ? `<span class="suite-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="1"/><circle cx="15" cy="12" r="1"/></svg>Suite ${escapeHtml(suiteVal)}</span>`
       : "";
 
     let statusHtml = "";
@@ -544,8 +560,10 @@
         ${photoHtml}
         <div class="profile-heading">
           <h1>${escapeHtml(displayName)}</h1>
-          ${locationBadgeHtml}
-          ${suiteHtml}
+          <div class="badge-row">
+            ${locationBadgeHtml}
+            ${suiteHtml}
+          </div>
         </div>
       </div>
       ${statusHtml}
@@ -657,4 +675,3 @@
  * again for content or design changes — only this one file, in one
  * place, updates every provider's page at once.
  */
-
