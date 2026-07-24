@@ -259,6 +259,28 @@
     width:17px;
     height:17px;
   }
+.pp-widget .cta-secondary{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:transparent;
+    color:var(--accent) !important;
+    font-size:15px;
+    font-weight:700 !important;
+    text-decoration:none;
+    padding:12px 25px;
+    border:1.5px solid var(--accent);
+    border-radius:100px;
+    transition:background .15s ease, color .15s ease;
+  }
+.pp-widget .cta-secondary:hover{
+    background:var(--accent);
+    color:#fff !important;
+  }
+.pp-widget .cta-secondary svg{
+    width:16px;
+    height:16px;
+  }
 .pp-widget .skeleton-header{
     display:flex;
     gap:24px;
@@ -507,12 +529,21 @@
     const newPatientsVal = (row["New Patients"] || "").trim();
     const anyPatientsVal = (row["Any Patients"] || "").trim();
 
-    // Point "Back to all providers" at the right directory page for this
-    // provider's Type, so a prescriber's page links back to /prescribers
-    // and a therapist's page links back to /therapists.
+    // Point "Back to all providers" (both the top link and the card
+    // button below) at the right directory page for this provider's
+    // Type, so a prescriber's page links back to /prescribers and a
+    // therapist's page links back to /therapists.
+    let backHref = "/clinician-directory";
+    let backLabel = "All Providers";
+    if (/^prescriber$/i.test(typeVal)){
+      backHref = "/prescribers";
+      backLabel = "Prescribers";
+    } else if (/^therapist$/i.test(typeVal)){
+      backHref = "/therapists";
+      backLabel = "Therapists";
+    }
     const backLink = document.getElementById('backLink');
-    if (/^prescriber$/i.test(typeVal)) backLink.href = "/prescribers";
-    else if (/^therapist$/i.test(typeVal)) backLink.href = "/therapists";
+    backLink.href = backHref;
 
     const photoHtml = photoVal
       ? `<img class="profile-photo" src="${escapeHtml(photoVal)}" alt="${escapeHtml(displayName)}${typeVal ? ', ' + escapeHtml(typeVal) : ''}${locationVal ? ' in ' + escapeHtml(formatLocation(locationVal)) : ''}" loading="lazy" onerror="this.remove()" />`
@@ -574,6 +605,10 @@
         <a class="cta-primary" href="/new-patient">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           Become A New Patient
+        </a>
+        <a class="cta-secondary" href="${backHref}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Back to ${escapeHtml(backLabel)}
         </a>
       </div>
     `;
@@ -663,13 +698,19 @@
  *   GitHub, visit this URL once to force jsDelivr to refresh immediately:
  *      https://purge.jsdelivr.net/gh/YOUR_GITHUB_USERNAME/YOUR_REPO@main/provider-profile.js
  *   Do that every time you edit this file, or your changes won't show
- *   up on the live pages right away.
+ *   up on the live pages right away. Even after a successful purge,
+ *   propagation across jsDelivr's edge network can take a few extra
+ *   minutes, and your OWN browser may still hold onto a cached copy of
+ *   the script separately — a hard refresh (or incognito window) rules
+ *   that out when testing a fresh change.
  *
- * Option B — raw.githubusercontent.com (updates show almost instantly,
- * no cache-purge step needed, but it's a less conventional way to serve
- * production JS and GitHub could rate-limit or change this behavior):
- *
- *      https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/YOUR_REPO/main/provider-profile.js
+ * Option B — raw.githubusercontent.com:
+ *   Updates here show up almost immediately with no purge step needed,
+ *   BUT this endpoint sends a "nosniff" security header with a plain-text
+ *   content type, which makes browsers refuse to EXECUTE it as a
+ *   <script src="...">. It's fine for fetching raw text/JSON, but do not
+ *   use it as the script src for this embed — it will render a blank
+ *   page. Stick with the jsDelivr URL above for the live embed.
  *
  * Either way: once hosted, you NEVER touch the Squarespace code block
  * again for content or design changes — only this one file, in one
