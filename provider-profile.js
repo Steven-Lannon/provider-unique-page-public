@@ -390,47 +390,6 @@
 .pp-widget .copy-btn.copied{
     color:#1F6B49 !important;
   }
-
-.pp-widget .sticky-cta{
-    position:fixed;
-    left:50%;
-    bottom:20px;
-    z-index:1050;
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    background:var(--accent);
-    color:#fff !important;
-    font-size:14px;
-    font-weight:700 !important;
-    text-decoration:none;
-    padding:12px 24px;
-    border-radius:100px;
-    box-shadow:0 4px 14px rgba(28,43,51,0.25);
-    opacity:0;
-    transform:translate(-50%, 12px);
-    pointer-events:none;
-    transition:opacity .2s ease, transform .2s ease, background .15s ease;
-  }
-.pp-widget .sticky-cta.visible{
-    opacity:1;
-    transform:translate(-50%, 0);
-    pointer-events:auto;
-  }
-.pp-widget .sticky-cta:hover{
-    background:#16223C;
-  }
-.pp-widget .sticky-cta svg{
-    width:16px;
-    height:16px;
-  }
-@media (max-width:600px){
-  .pp-widget .sticky-cta{
-    bottom:14px;
-    padding:10px 20px;
-    font-size:13px;
-  }
-}
 `;
   const MARKUP = `<div class="pp-widget">
 <div class="page-bg">
@@ -458,11 +417,6 @@
 <div class="photo-lightbox" id="photoLightbox">
   <img id="photoLightboxImg" src="" alt="" />
 </div>
-
-<a class="sticky-cta" id="stickyCta" href="/new-patient">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-  Become A New Patient
-</a>
 </div>`;
 
   // Inject the stylesheet once, even if this script somehow loads twice.
@@ -749,29 +703,13 @@
         </a>
         ${locationPageHref ? `<a class="cta-secondary" href="${locationPageHref}">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.1-7-11.5A7 7 0 0 1 19 9.5C19 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
-          View ${escapeHtml(locationVal.trim())}
+          View ${escapeHtml(formatLocation(locationVal))}
         </a>` : ""}
       </div>
     `;
     profileCard.classList.add('pp-fade-in');
 
     document.title = `${displayName} — Evolve Psychiatry`;
-
-    setupStickyCta(profileCard.querySelector('.cta-row'));
-  }
-
-  // Shows the floating "Become A New Patient" button only while the
-  // real CTA row (at the bottom of the card) is scrolled out of view,
-  // so it never sits redundantly on top of the same button.
-  function setupStickyCta(ctaRow){
-    const stickyCta = document.getElementById('stickyCta');
-    if (!ctaRow || !stickyCta || !('IntersectionObserver' in window)) return;
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        stickyCta.classList.toggle('visible', !entry.isIntersecting);
-      });
-    }, { threshold: 0 });
-    observer.observe(ctaRow);
   }
 
   // Injects a single Physician schema object (richer than the directory's
