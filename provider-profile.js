@@ -391,67 +391,6 @@
     color:#1F6B49 !important;
   }
 
-.pp-widget .related-section{
-    margin-top:36px;
-  }
-.pp-widget .related-heading{
-    font-size:16px;
-    font-weight:700 !important;
-    color:var(--ink) !important;
-    margin-bottom:14px;
-  }
-.pp-widget .related-grid{
-    display:grid;
-    grid-template-columns:repeat(3, 1fr);
-    gap:14px;
-  }
-@media (max-width:640px){
-  .pp-widget .related-grid{grid-template-columns:1fr;}
-}
-.pp-widget .related-card{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    text-align:center;
-    gap:6px;
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:10px;
-    padding:18px 14px;
-    text-decoration:none;
-    transition:border-color .15s ease, box-shadow .15s ease;
-  }
-.pp-widget .related-card:hover{
-    border-color:#C7D2D2;
-    box-shadow:0 4px 16px rgba(28,43,51,0.06);
-  }
-.pp-widget .related-photo{
-    width:64px;
-    height:64px;
-    border-radius:50%;
-    object-fit:cover;
-    background:var(--accent-soft);
-    cursor:default;
-  }
-.pp-widget .related-photo-initials{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:var(--accent) !important;
-    font-weight:700 !important;
-    font-size:20px;
-  }
-.pp-widget .related-name{
-    font-size:13.5px;
-    font-weight:700 !important;
-    color:var(--ink) !important;
-  }
-.pp-widget .related-location{
-    font-size:12px;
-    font-weight:400 !important;
-    color:var(--muted) !important;
-  }
-
 .pp-widget .sticky-cta{
     position:fixed;
     left:50%;
@@ -497,9 +436,9 @@
 <div class="page-bg">
 <div class="wrap">
   <nav class="breadcrumb-nav" aria-label="Breadcrumb">
-    <a href="/clinician-directory">All Providers</a>
+    <a href="/clinicians">All Clinicians</a>
     <span class="breadcrumb-sep">/</span>
-    <a href="/clinician-directory" id="breadcrumbType">Providers</a>
+    <a href="/clinicians" id="breadcrumbType">Providers</a>
     <span class="breadcrumb-sep">/</span>
     <span class="breadcrumb-current" id="breadcrumbCurrent">Loading&hellip;</span>
   </nav>
@@ -513,7 +452,6 @@
       </div>
     </div>
   </div>
-  <div id="relatedProviders"></div>
 </div>
 </div>
 
@@ -644,7 +582,7 @@
     document.getElementById('profileCard').innerHTML = `
       <div class="not-found">
         <p>We couldn't find a provider matching this page.</p>
-        <p><a href="/clinician-directory">View the full clinician directory →</a></p>
+        <p><a href="/clinicians">View the full clinician directory →</a></p>
       </div>`;
   }
 
@@ -719,11 +657,11 @@
     const newPatientsVal = (row["New Patients"] || "").trim();
     const anyPatientsVal = (row["Any Patients"] || "").trim();
 
-    // Breadcrumb: "All Providers / Prescribers / <Name>" — the middle
+    // Breadcrumb: "All Clinicians / Prescribers / <Name>" — the middle
     // segment's link and label depend on this provider's Type, so a
     // prescriber's page reads "Prescribers" and links to /prescribers,
     // and a therapist's page reads "Therapists" and links to /therapists.
-    let backHref = "/clinician-directory";
+    let backHref = "/clinicians";
     let backLabel = "Providers";
     if (/^prescriber$/i.test(typeVal)){
       backHref = "/prescribers";
@@ -761,6 +699,13 @@
     const notAcceptingNew = newPatientsVal && /^no$/i.test(newPatientsVal);
     const telehealthHtml = (/^remote$/i.test(locationVal) && !notAcceptingNew)
       ? `<div class="telehealth-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Telehealth appointments only.</div>`
+      : "";
+
+    // Location page links follow the same slug pattern as the city name
+    // itself (spaces become hyphens), e.g. "Garden City" -> /garden-city.
+    // Skip the button entirely for "Remote" or a blank Location.
+    const locationPageHref = (locationVal && !/^remote$/i.test(locationVal))
+      ? `/${locationVal.trim().toLowerCase().replace(/\s+/g, "-")}`
       : "";
 
     const facts = [];
@@ -802,91 +747,17 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           Become A New Patient
         </a>
-        <a class="cta-secondary" href="/prescribers">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 20.5 3 13a5 5 0 0 1 7-7l1 1"/><path d="M13.5 3.5 21 11a5 5 0 0 1-7 7l-1-1"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-          View Prescribers
-        </a>
-        <a class="cta-secondary" href="/therapists">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          View Therapists
-        </a>
+        ${locationPageHref ? `<a class="cta-secondary" href="${locationPageHref}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.1-7-11.5A7 7 0 0 1 19 9.5C19 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+          View ${escapeHtml(locationVal.trim())}
+        </a>` : ""}
       </div>
     `;
     profileCard.classList.add('pp-fade-in');
 
     document.title = `${displayName} — Evolve Psychiatry`;
 
-    renderRelatedProviders(row, allRows, typeVal, locationVal);
     setupStickyCta(profileCard.querySelector('.cta-row'));
-  }
-
-  // Picks up to 3 other providers of the same Type — preferring ones in
-  // the same Location first — so a dead-end profile page becomes a
-  // browsing path to other providers instead of a stop sign.
-  function pickRelatedProviders(currentRow, allRows, typeVal, locationVal){
-    const currentSlug = slugify(`${currentRow["First Name"] || ""} ${currentRow["Last Name"] || ""}`);
-    const typeLower = typeVal.toLowerCase();
-    const locationLower = locationVal.toLowerCase();
-
-    const sameType = allRows.filter(r => {
-      const slug = slugify(`${r["First Name"] || ""} ${r["Last Name"] || ""}`);
-      if (!slug || slug === currentSlug) return false;
-      return (r["Type"] || "").trim().toLowerCase() === typeLower;
-    });
-
-    const sameLocation = sameType.filter(r => (r["Location"] || "").trim().toLowerCase() === locationLower && locationLower);
-    const rest = sameType.filter(r => !sameLocation.includes(r));
-
-    return {
-      picks: [...sameLocation, ...rest].slice(0, 3),
-      hasSameLocationMatch: sameLocation.length > 0
-    };
-  }
-
-  function renderRelatedProviders(currentRow, allRows, typeVal, locationVal){
-    const container = document.getElementById('relatedProviders');
-    if (!typeVal || !allRows || !allRows.length){
-      container.innerHTML = "";
-      return;
-    }
-
-    const { picks, hasSameLocationMatch } = pickRelatedProviders(currentRow, allRows, typeVal, locationVal);
-    if (!picks.length){
-      container.innerHTML = "";
-      return;
-    }
-
-    const heading = (hasSameLocationMatch && locationVal)
-      ? `Other ${escapeHtml(typeVal)}s in ${escapeHtml(formatLocation(locationVal))}`
-      : `Other ${escapeHtml(typeVal)}s You May Like`;
-
-    const cardsHtml = picks.map(p => {
-      const pFirst = p["First Name"] || "";
-      const pLast = p["Last Name"] || "";
-      const pName = `${pFirst} ${pLast}`.trim();
-      const pTitle = (p["Title"] || "").trim();
-      const pDisplay = pTitle ? `${pName}, ${pTitle}` : pName;
-      const pSlug = slugify(pName);
-      const pPhoto = (p["Photo URL"] || "").trim();
-      const pLocation = (p["Location"] || "").trim();
-
-      const pPhotoHtml = pPhoto
-        ? `<img class="related-photo" src="${escapeHtml(pPhoto)}" alt="${escapeHtml(pDisplay)}" loading="lazy" onerror="this.remove()" />`
-        : `<div class="related-photo related-photo-initials">${escapeHtml(initials(pName))}</div>`;
-
-      return `<a class="related-card" href="/${pSlug}">
-          ${pPhotoHtml}
-          <span class="related-name">${escapeHtml(pDisplay)}</span>
-          ${pLocation ? `<span class="related-location">${escapeHtml(formatLocation(pLocation))}</span>` : ""}
-        </a>`;
-    }).join("");
-
-    container.innerHTML = `
-      <div class="related-section pp-fade-in">
-        <div class="related-heading">${heading}</div>
-        <div class="related-grid">${cardsHtml}</div>
-      </div>
-    `;
   }
 
   // Shows the floating "Become A New Patient" button only while the
@@ -965,7 +836,7 @@
 
     const site = "https://evolvepsychiatry.com";
     const items = [
-      { "@type": "ListItem", "position": 1, "name": "All Providers", "item": `${site}/clinician-directory` }
+      { "@type": "ListItem", "position": 1, "name": "All Clinicians", "item": `${site}/clinicians` }
     ];
     if (/^prescriber$/i.test(typeVal)){
       items.push({ "@type": "ListItem", "position": 2, "name": "Prescribers", "item": `${site}/prescribers` });
