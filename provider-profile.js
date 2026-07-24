@@ -529,19 +529,13 @@
     const newPatientsVal = (row["New Patients"] || "").trim();
     const anyPatientsVal = (row["Any Patients"] || "").trim();
 
-    // Point "Back to all providers" (both the top link and the card
-    // button below) at the right directory page for this provider's
-    // Type, so a prescriber's page links back to /prescribers and a
-    // therapist's page links back to /therapists.
+    // Point "Back to all providers" (the link above the card) at the
+    // right directory page for this provider's Type, so a prescriber's
+    // page links back to /prescribers and a therapist's page links
+    // back to /therapists.
     let backHref = "/clinician-directory";
-    let backLabel = "All Providers";
-    if (/^prescriber$/i.test(typeVal)){
-      backHref = "/prescribers";
-      backLabel = "Prescribers";
-    } else if (/^therapist$/i.test(typeVal)){
-      backHref = "/therapists";
-      backLabel = "Therapists";
-    }
+    if (/^prescriber$/i.test(typeVal)) backHref = "/prescribers";
+    else if (/^therapist$/i.test(typeVal)) backHref = "/therapists";
     const backLink = document.getElementById('backLink');
     backLink.href = backHref;
 
@@ -606,9 +600,13 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           Become A New Patient
         </a>
-        <a class="cta-secondary" href="${backHref}">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-          Back to ${escapeHtml(backLabel)}
+        <a class="cta-secondary" href="/prescribers">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 20.5 3 13a5 5 0 0 1 7-7l1 1"/><path d="M13.5 3.5 21 11a5 5 0 0 1-7 7l-1-1"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          View Prescribers
+        </a>
+        <a class="cta-secondary" href="/therapists">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          View Therapists
         </a>
       </div>
     `;
